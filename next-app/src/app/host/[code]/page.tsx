@@ -3,7 +3,7 @@
 import { QRCodeSVG } from "qrcode.react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Footer } from "@/components/Footer";
 import { GuessViz } from "@/components/GuessViz";
 import { Podium } from "@/components/Podium";
@@ -16,6 +16,20 @@ type HostState = EventPublic & {
   screenToken?: string;
   answer?: number | null;
 };
+
+function applyForm(data: HostState, setters: {
+  setCompanyName: (v: string) => void;
+  setQuestion: (v: string) => void;
+  setAnswer: (v: string) => void;
+  setDurationSec: (v: number) => void;
+  setCoverPhoto: (v: string | null) => void;
+}) {
+  setters.setCompanyName(data.companyName || "");
+  setters.setQuestion(data.question || "");
+  setters.setAnswer(data.answer != null ? String(data.answer) : "");
+  setters.setDurationSec(data.durationSec || 45);
+  setters.setCoverPhoto(data.coverPhoto);
+}
 
 export default function HostPage() {
   const params = useParams<{ code: string }>();
@@ -30,11 +44,13 @@ export default function HostPage() {
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [origin, setOrigin] = useState("");
+  const formSeeded = useRef(false);
 
   useEffect(() => {
     setOrigin(window.location.origin);
     const t = sessionStorage.getItem(`guess-digit-host:${code}`);
     setToken(t);
+    formSeeded.current = false;
   }, [code]);
 
   const refresh = useCallback(async () => {
@@ -42,11 +58,11 @@ export default function HostPage() {
     try {
       const data = await api<HostState>(`/api/events/${code}`, { token });
       setState(data);
-      setCompanyName(data.companyName || "");
-      setQuestion(data.question || "");
-      if (data.answer != null) setAnswer(String(data.answer));
-      setDurationSec(data.durationSec || 45);
-      setCoverPhoto(data.coverPhoto);
+      // Poll must not wipe inputs the host is typing.
+      if (!formSeeded.current) {
+        applyForm(data, { setCompanyName, setQuestion, setAnswer, setDurationSec, setCoverPhoto });
+        formSeeded.current = true;
+      }
       if (data.guestKey) sessionStorage.setItem(`guess-digit-guestkey:${code}`, data.guestKey);
       if (data.screenToken) sessionStorage.setItem(`guess-digit-screen:${code}`, data.screenToken);
     } catch {
@@ -88,6 +104,8 @@ export default function HostPage() {
         },
       });
       setState(data);
+      applyForm(data, { setCompanyName, setQuestion, setAnswer, setDurationSec, setCoverPhoto });
+      formSeeded.current = true;
     } catch (e) {
       setErr(e instanceof Error ? e.message : "save_failed");
     } finally {
@@ -107,6 +125,10 @@ export default function HostPage() {
         body: { action },
       });
       setState(data);
+      if (action === "reset") {
+        applyForm(data, { setCompanyName, setQuestion, setAnswer, setDurationSec, setCoverPhoto });
+        formSeeded.current = true;
+      }
     } catch (e) {
       setErr(e instanceof Error ? e.message : "action_failed");
     } finally {
