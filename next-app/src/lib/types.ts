@@ -1,5 +1,11 @@
 export type Phase = "setup" | "lobby" | "guessing" | "finale";
 
+export type Fact = {
+  id: string;
+  question: string;
+  answer: number;
+};
+
 export type EventRow = {
   id: string;
   code: string;
@@ -14,6 +20,7 @@ export type EventRow = {
   phase: Phase;
   timer_ends_at: string | null;
   created_at: string;
+  facts_json?: string | null;
 };
 
 export type GuessRow = {
@@ -48,4 +55,5 @@ export type EventPublic = {
   guesses: PublicGuess[];
   top3: RankedGuess[] | null;
   answer: number | null;
+  facts: Fact[];
 };

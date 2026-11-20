@@ -44,30 +44,26 @@ export default function HomePage() {
 
   return (
     <div className="shell">
+      <div className="atmosphere" aria-hidden />
       <div className="garland" />
       <Snow />
       <main className="main">
         <div className="hero-home">
-          <div className="stack" style={{ animation: "riseIn 0.6s ease both" }}>
-            <img
-              src="/brand/logo.png"
-              alt="St. Shmidt"
-              width={72}
-              height={72}
-              style={{ borderRadius: 14 }}
-            />
-            <h1 className="display" style={{ fontSize: "clamp(3.4rem, 12vw, 6.5rem)" }}>
-              Угадай цифру
-            </h1>
-            <p className="muted" style={{ fontSize: "1.15rem", maxWidth: 420, margin: 0 }}>
+          <div className="hero-digit" aria-hidden>
+            ?
+          </div>
+          <div className="hero-copy reveal">
+            <img className="hero-mark" src="/brand/logo.png" alt="St. Shmidt" width={88} height={88} />
+            <h1 className="display display-xl">Угадай цифру</h1>
+            <p className="muted" style={{ fontSize: "1.15rem", maxWidth: 440, margin: 0 }}>
               Новогодний зал против загадки ведущего. Ближайший к ответу — чемпион вечера.
             </p>
-            <div className="row" style={{ marginTop: "0.5rem" }}>
-              <button className="btn btn-lime" disabled={busy} onClick={createHost}>
+            <div className="row" style={{ marginTop: "0.35rem" }}>
+              <button className="btn btn-gold" disabled={busy} onClick={createHost}>
                 {busy ? "Создаём…" : "Ведущий: создать раунд"}
               </button>
             </div>
-            <form className="panel stack" onSubmit={joinGuest} style={{ maxWidth: 420 }}>
+            <form className="panel stack hero-join reveal" onSubmit={joinGuest} style={{ animationDelay: "0.12s" }}>
               <div className="field">
                 <label htmlFor="code">Гость: код раунда</label>
                 <input
@@ -79,14 +75,11 @@ export default function HomePage() {
                   autoCapitalize="characters"
                 />
               </div>
-              <button className="btn btn-coral" type="submit">
+              <button className="btn btn-ice" type="submit">
                 Войти с телефона
               </button>
               {err && <p className="error">{err}</p>}
             </form>
-          </div>
-          <div className="hero-visual" aria-hidden>
-            <div className="digit">?</div>
           </div>
         </div>
       </main>

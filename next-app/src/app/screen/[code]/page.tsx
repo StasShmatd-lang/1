@@ -51,48 +51,55 @@ export default function ScreenPage() {
 
   return (
     <div className="shell screen-shell">
+      <div className="atmosphere" aria-hidden />
       <div className="garland" />
-      <Snow count={36} />
-      <main className="main stack">
-        <div className="screen-meta">
-          <div>
-            <p className="muted" style={{ margin: 0, letterSpacing: "0.12em", textTransform: "uppercase" }}>
-              {state?.companyName || "Новогодний зал"} · код {code}
-            </p>
-            <h1 className="display screen-q">{state?.question || "Угадай цифру"}</h1>
-          </div>
-          {state?.phase === "guessing" && (
-            <div className="timer" key={state.secondsLeft ?? 0}>
-              {state.secondsLeft ?? 0}
+      <Snow count={28} />
+      <main className="main">
+        <div className="screen-stage">
+          <div className="screen-meta reveal">
+            <div>
+              <p className="eyebrow">
+                {state?.companyName || "Новогодний зал"} · код {code}
+              </p>
+              <h1 className="display screen-q">
+                {state?.question?.trim()
+                  ? state.question
+                  : state?.phase === "setup"
+                    ? "Ждём факт от ведущего"
+                    : "Угадай цифру"}
+              </h1>
             </div>
-          )}
-          {state?.phase === "lobby" && (
-            <div className="display" style={{ fontSize: "3rem", color: "var(--ice)" }}>
-              Готовы?
-            </div>
-          )}
-        </div>
-
-        {state?.coverPhoto && state.phase !== "finale" && (
-          <img className="cover" src={state.coverPhoto} alt="" style={{ maxHeight: 180 }} />
-        )}
-
-        <div className="panel" style={{ minHeight: 260 }}>
-          {!token && <p className="error">Откройте экран по ссылке ведущего (токен в #s=…).</p>}
-          {err && <p className="error">{err}</p>}
-          {state?.phase === "setup" && <p className="muted">Ждём настройки раунда…</p>}
-          {state && (state.phase === "lobby" || state.phase === "guessing") && (
-            <div className="stack">
-              <div className="row" style={{ justifyContent: "space-between" }}>
-                <strong style={{ color: "var(--lime)" }}>Ответов: {state.guessCount}</strong>
-                <span className="muted">{viz === "bars" ? "гистограмма" : "облако"}</span>
+            {state?.phase === "guessing" && (
+              <div className="timer screen-timer" key={state.secondsLeft ?? 0}>
+                {state.secondsLeft ?? 0}
               </div>
-              <GuessViz guesses={state.guesses} mode={viz} />
-            </div>
+            )}
+            {state?.phase === "lobby" && <div className="lobby-pulse">Готовы?</div>}
+          </div>
+
+          {state?.coverPhoto && state.phase !== "finale" && (
+            <img className="cover" src={state.coverPhoto} alt="" style={{ maxHeight: 160 }} />
           )}
-          {state?.phase === "finale" && (
-            <Podium top3={state.top3 || []} answer={state.answer} />
-          )}
+
+          <div className="screen-viz reveal" style={{ animationDelay: "0.1s" }}>
+            {!token && <p className="error">Откройте экран по ссылке ведущего (токен в #s=…).</p>}
+            {err && <p className="error">{err}</p>}
+            {state?.phase === "setup" && (
+              <p className="muted" style={{ fontSize: "1.2rem" }}>
+                Ведущий собирает факты…
+              </p>
+            )}
+            {state && (state.phase === "lobby" || state.phase === "guessing") && (
+              <div className="stack" style={{ height: "100%" }}>
+                <div className="row" style={{ justifyContent: "space-between" }}>
+                  <span className="screen-count">Ответов: {state.guessCount}</span>
+                  <span className="muted">{viz === "bars" ? "гистограмма" : "облако"}</span>
+                </div>
+                <GuessViz guesses={state.guesses} mode={viz} hall />
+              </div>
+            )}
+            {state?.phase === "finale" && <Podium top3={state.top3 || []} answer={state.answer} hall />}
+          </div>
         </div>
       </main>
       <Footer />

@@ -72,6 +72,7 @@ function GuestInner() {
         forbidden: "Неверный ключ гостя — откройте QR ведущего",
         bad_name: "Введите имя",
         bad_value: "Введите целое число",
+        no_fact: "Ведущий ещё не запустил факт",
       };
       setErr(map[msg] || msg);
     } finally {
@@ -83,33 +84,32 @@ function GuestInner() {
 
   return (
     <div className="shell">
+      <div className="atmosphere" aria-hidden />
       <div className="garland" />
-      <Snow count={16} />
+      <Snow count={12} />
       <main className="main stack" style={{ maxWidth: 520 }}>
-        <div style={{ animation: "riseIn 0.5s ease both" }}>
-          <p className="muted" style={{ margin: 0, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+        <div className="reveal">
+          <p className="eyebrow">
             {state?.companyName || "Гость"} · {code}
           </p>
-          <h1 className="display" style={{ fontSize: "clamp(2.8rem, 12vw, 4.2rem)" }}>
-            Угадай цифру
-          </h1>
+          <h1 className="display display-md">Угадай цифру</h1>
         </div>
 
         {state?.coverPhoto && <img className="cover" src={state.coverPhoto} alt="" />}
 
         {phase === "setup" && (
           <div className="panel">
-            <p className="muted">Ведущий ещё настраивает раунд. Держите телефон рядом.</p>
+            <p className="muted">Ведущий собирает факты. Держите телефон рядом.</p>
           </div>
         )}
 
         {(phase === "lobby" || phase === "guessing") && (
-          <form className="panel stack" onSubmit={(e) => void submit(e)}>
-            <h2 className="display" style={{ fontSize: "2rem", color: "var(--ice)" }}>
-              {state?.question || "…"}
+          <form className="panel stack reveal" onSubmit={(e) => void submit(e)}>
+            <h2 className="display" style={{ fontSize: "clamp(1.8rem, 7vw, 2.6rem)", color: "var(--gold)" }}>
+              {state?.question?.trim() || "Ожидаем вопрос…"}
             </h2>
             {phase === "guessing" && (
-              <div className="timer" key={state?.secondsLeft ?? 0} style={{ fontSize: "4rem" }}>
+              <div className="timer" key={state?.secondsLeft ?? 0} style={{ fontSize: "4.2rem" }}>
                 {state?.secondsLeft ?? 0}
               </div>
             )}
@@ -127,10 +127,10 @@ function GuestInner() {
                 required
               />
             </div>
-            <button className="btn btn-lime" disabled={busy} type="submit">
+            <button className="btn btn-gold" disabled={busy || !state?.question?.trim()} type="submit">
               {sent ? "Обновить ответ" : "Отправить"}
             </button>
-            {sent && <p style={{ color: "var(--lime)", margin: 0 }}>Принято! Можно исправить до финала.</p>}
+            {sent && <p className="ok" style={{ margin: 0 }}>Принято! Можно исправить до финала.</p>}
             {err && <p className="error">{err}</p>}
           </form>
         )}

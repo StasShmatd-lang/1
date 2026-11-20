@@ -35,5 +35,9 @@ async function startLocal(): Promise<PGlite> {
   for (const file of files) {
     await db.exec(await readFile(`migrations/${file}`, "utf8"));
   }
+  // Older in-memory snapshots may lack facts_json if only 001 ran somehow.
+  await db.exec(
+    `alter table events add column if not exists facts_json text not null default '[]'`,
+  );
   return db;
 }

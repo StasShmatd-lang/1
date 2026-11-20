@@ -4,8 +4,8 @@ const IG =
 export function Footer() {
   return (
     <footer className="footer">
-      <a href={IG} target="_blank" rel="noopener noreferrer" aria-label="Instagram Stas Shmidt">
-        <img src="/brand/logo.png" alt="St. Shmidt" width={36} height={36} />
+      <a href={IG} target="_blank" rel="noopener noreferrer" aria-label="Instagram St. Shmidt">
+        <img src="/brand/logo.png" alt="St. Shmidt" width={40} height={40} />
         <span className="muted">@st.shmidt</span>
       </a>
     </footer>

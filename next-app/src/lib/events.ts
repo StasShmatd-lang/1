@@ -1,4 +1,5 @@
 import { sql } from "./db";
+import { parseFacts } from "./facts";
 import { randomToken, shortCode } from "./tokens";
 import type { EventPublic, EventRow, GuessRow, Phase, RankedGuess } from "./types";
 
@@ -98,6 +99,7 @@ export async function toPublic(
     guesses: guesses.map((g) => ({ name: g.name, value: g.value })),
     top3: isFinale && answer != null ? rankTop3(guesses, answer) : null,
     answer: opts.revealAnswer && isFinale ? answer : null,
+    facts: opts.revealAnswer ? parseFacts(live.facts_json ?? "[]") : [],
   };
 }
 
